@@ -1,4 +1,3 @@
-
 version: '3'
 
 x-airflow-common:
@@ -7,12 +6,14 @@ x-airflow-common:
   environment:
     &airflow-common-env
     AIRFLOW__CORE__SQL_ALCHEMY_CONN: sqlite:////usr/local/airflow/db/airflow.db
-    AIRFLOW__CORE__LOAD_EXAMPLES: 'true'
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
   volumes:
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
     - ./plugins:/opt/airflow/plugins
     - ./db:/usr/local/airflow/db
+    - ./raw_data:/opt/airflow/raw_data
+    - ./processed_data:/opt/airflow/processed_data
   user: "${AIRFLOW_UID:-50000}:${AIRFLOW_GID:-50000}"
 
 services:
@@ -34,9 +35,6 @@ services:
     environment:
       <<: *airflow-common-env
     restart: always
-    depends_on:
-      airflow-webserver:
-        condition: service_healthy
 
   airflow-webserver:
     <<: *airflow-common
